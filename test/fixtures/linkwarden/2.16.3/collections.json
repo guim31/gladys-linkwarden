@@ -1,0 +1,64 @@
+{
+  "status": 200,
+  "body": {
+    "response": [
+      {
+        "id": 1,
+        "name": "Recipes",
+        "description": "Cooking",
+        "icon": null,
+        "iconWeight": null,
+        "color": "#0ea5e9",
+        "parentId": null,
+        "isPublic": false,
+        "ownerId": 1,
+        "createdById": 1,
+        "createdAt": "2026-10-20T12:49:15.890Z",
+        "updatedAt": "2026-10-20T12:49:15.890Z",
+        "parent": null,
+        "members": [],
+        "_count": {
+          "links": 2
+        }
+      },
+      {
+        "id": 2,
+        "name": "Reading",
+        "description": "",
+        "icon": null,
+        "iconWeight": null,
+        "color": "#0ea5e9",
+        "parentId": null,
+        "isPublic": false,
+        "ownerId": 1,
+        "createdById": 1,
+        "createdAt": "2026-10-20T12:49:15.924Z",
+        "updatedAt": "2026-10-20T12:49:15.924Z",
+        "parent": null,
+        "members": [],
+        "_count": {
+          "links": 0
+        }
+      },
+      {
+        "id": 3,
+        "name": "Unorganized",
+        "description": "",
+        "icon": null,
+        "iconWeight": null,
+        "color": "#0ea5e9",
+        "parentId": null,
+        "isPublic": false,
+        "ownerId": 1,
+        "createdById": 1,
+        "createdAt": "2026-10-20T12:49:15.989Z",
+        "updatedAt": "2026-10-20T12:49:15.989Z",
+        "parent": null,
+        "members": [],
+        "_count": {
+          "links": 1
+        }
+      }
+    ]
+  }
+}

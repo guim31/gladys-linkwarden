@@ -1,0 +1,46 @@
+{
+  "status": 200,
+  "body": {
+    "response": {
+      "id": 2,
+      "name": "http://192.0.2.10/article",
+      "type": "url",
+      "description": "",
+      "createdById": 1,
+      "collectionId": 3,
+      "icon": null,
+      "iconWeight": null,
+      "color": null,
+      "url": "http://192.0.2.10/article",
+      "textContent": null,
+      "preview": "unavailable",
+      "image": "unavailable",
+      "pdf": "unavailable",
+      "readable": "unavailable",
+      "monolith": "unavailable",
+      "clientSide": false,
+      "aiTagged": false,
+      "metaDescription": null,
+      "indexVersion": null,
+      "lastPreserved": "2026-10-20T12:49:15.998Z",
+      "importDate": null,
+      "createdAt": "2026-10-20T12:49:15.999Z",
+      "updatedAt": "2026-10-20T12:49:15.999Z",
+      "tags": [],
+      "collection": {
+        "id": 3,
+        "name": "Unorganized",
+        "description": "",
+        "icon": null,
+        "iconWeight": null,
+        "color": "#0ea5e9",
+        "parentId": null,
+        "isPublic": false,
+        "ownerId": 1,
+        "createdById": 1,
+        "createdAt": "2026-10-20T12:49:15.989Z",
+        "updatedAt": "2026-10-20T12:49:15.989Z"
+      }
+    }
+  }
+}

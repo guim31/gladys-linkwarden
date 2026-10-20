@@ -16,8 +16,8 @@ its only runtime dependency. It started from the official JavaScript template.
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/hub.test.js              # one file
+node --test --test-name-pattern "widget"  # tests whose name matches
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -32,15 +32,20 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+src/app.js                        registers every SDK handler on the hub (shared with the tests)
+src/hub.js                        the link to Linkwarden: timers, devices, states, trigger, status, saves
+src/devices.js                    the Linkwarden device and the collection devices, their states
+src/linkwarden/client.js          REST API v1 (access token), errors by kind
+src/linkwarden/model.js           links and collections -> plain values; tags, collections, links typed by users
+src/store.js                      /data/linkwarden-state.json: the highest link id the trigger saw
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    dashboard widget and its form (manifest `widgets`)
+src/texts.js                      every text produced by the container, in four languages
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (same sections)
+test/                             node --test, SDK fake Gladys + fake Linkwarden (test/helpers/)
+test/fixtures/linkwarden/2.16.3/  bodies recorded on a real Linkwarden 2.16.3
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,10 +75,55 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German and Spanish: action
+  messages, manifest texts, widget content, feature names, and
+  `docs/{en,fr,de,es}.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
+
+## Linkwarden
+
+- **API v1, access token** (`Authorization: Bearer`), created in Settings →
+  Access Tokens (expiry 7 days to never), or by `POST /api/v1/tokens`
+  `{ name, expires: 0..4 }` with a session token from `POST /api/v1/session`
+  `{ username, password, sessionName }` (handy to script a test server; the
+  first user comes from `POST /api/v1/users`). No version endpoint.
+- Answers are `{ response }`, except `/search` and `/tags`
+  (`{ data, success, message }`). Errors carry their reason in `response`:
+  401 `You must be logged in.`, 400 `Error: Invalid URL [url]`, 400
+  `Collection is not accessible.`, 409 `Link already exists` (only when the
+  user turned on "prevent duplicate links"; otherwise duplicates are saved).
+  An unknown route is an HTML 404.
+- `GET /links` is **deprecated** (off with `DISABLE_DEPRECATED_ROUTES`): read
+  links through `GET /search?sort=0` (no query string), which exists since
+  2.10. 50 links per page (`PAGINATION_TAKE_COUNT`), ordered by **id**, which
+  only grows; `nextCursor` is the last id, null on a short page. With
+  Meilisearch and a query string the cursor becomes an offset: never send a
+  query string.
+- `POST /links` with `collection: { name }` **creates** a missing collection,
+  and without a collection files the link in `Unorganized` (created on
+  demand): the integration resolves names itself and sends an id.
+- `GET /collections` lists owned and shared collections, sub-collections
+  included, with `_count.links` (links directly in the collection) and
+  `parent: { id, name }`. Their sum is the total of links the user can see.
+- Imported links carry `importDate`; `createdAt` is the import time. They count
+  in "links added today" but never fire the trigger.
+- Link page: `<base>/links/<id>`. Widget card links must be https: offered only
+  when Linkwarden is reached over https.
+- Linkwarden fetches the page title of a new link only when its address is not
+  private (`isUrlSafeForServerSideFetch`); otherwise the link is named after
+  its URL, and the integration shows the domain instead.
+- The trigger keeps the highest link id seen and the ids saved from Gladys
+  (`/data/linkwarden-state.json`); an event Gladys refuses (5xx, 429) is
+  retried at the next read, three reads at most, so one bad link never blocks
+  the others.
+- Tests on Node 22: the timer of `AbortSignal.timeout` does not hold the event
+  loop; a fake `fetch` that waits for the abort must hold it itself, or the
+  test is cancelled ("Promise resolution is still pending").
+- Testing with Docker: `ghcr.io/linkwarden/linkwarden` (port 3000,
+  `DATABASE_URL` to PostgreSQL, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`) and
+  `postgres:16-alpine`. The worker archives links when it has internet access;
+  links to private addresses are left alone.
 
 ---
 
