@@ -1,61 +1,137 @@
-# Demo Devices Template
+# Linkwarden
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+Connect Gladys to [Linkwarden](https://linkwarden.app), the self-hosted app to
+collect, organize and preserve links: follow your counters, react when a link
+is saved in a collection, save links from your scenes or from the dashboard,
+and read the newest ones in a message. Everything stays on your local network:
+Gladys talks directly to your Linkwarden server.
 
-## What you get
+Tested against a real Linkwarden 2.16.3 server (the official Docker image).
+Feedback welcome on the Gladys forum.
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+## Prerequisites
+
+- Gladys Assistant 5.2 or later.
+- Linkwarden 2.10 or later, reachable from the Gladys machine, on port 3000 by
+  default, or through a reverse proxy.
+- An access token: in Linkwarden, open **Settings → Access Tokens** and create
+  one. Choose **Never** as expiry, or note the date to renew it. The
+  integration sees the links of the user who owns the token, shared
+  collections included.
 
 ## Configuration
 
 1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+2. In **Linkwarden address**, enter the IP address of the server, for example
+   `192.168.1.50`: the integration then uses port 3000. Add a port if yours
+   differs (`192.168.1.50:3100`). Behind a reverse proxy, enter the full
+   address (`https://links.example.org`).
+3. Paste the **Access token**.
+4. **Read Linkwarden every**: 5, 15, 30 (default) or 60 minutes. New links are
+   announced at the next read; the links saved from Gladys update the counters
+   at once.
+5. **Language of names and messages** sets the feature names (fixed when a
+   device is added) and the texts of the integration. French by default.
+6. Save, then use **Test the connection**: it shows the Linkwarden user and the
+   number of links and collections.
+7. In the **Discovery** tab, add the **Linkwarden** device, and the collections
+   you want to follow.
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+## Devices
 
-## Actions
+**Linkwarden** (one device for the user of the token):
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+| Feature           | Value                                                 |
+| ----------------- | ----------------------------------------------------- |
+| Links             | number of links, in every collection                  |
+| Links added today | links saved since midnight (0 again just after it)    |
+| Collections       | number of collections, sub-collections included       |
+| Latest link       | name of the newest link (its domain when it has none) |
 
-## Scenes
+**One device per collection** (named like the collection, `Parent / Child`
+for a sub-collection), with one feature, **Links**: the number of links
+directly in the collection. Add only the ones you care about.
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+The counters keep their history: a chart shows how a collection grows.
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+## Dashboard widget
 
-## Dashboard
+**Linkwarden**: three tiles (links, today, collections), the six newest links
+and a **Save a link** button. In the widget settings, **Collection** picks a
+collection device: the widget then shows its number of links and its newest
+links, and saves in it. Tap a link to read its description and to open it
+(https links only; **Open in Linkwarden** appears when Linkwarden is reached
+over https). **Save a link** opens a form: type a link (`https://…` or
+`www.…`) and the integration saves it.
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+## Scene triggers
+
+**New link**: a link is saved in Linkwarden, from the web app, the browser
+extension, the mobile app or an RSS feed. The **Collection** filter keeps only
+the links of one collection (pick a collection device; empty: all). Imports
+and the links saved by this integration are not announced.
+
+Variables: **Name**, **Link**, **Description**, **Collection** (its name),
+**Tags** (separated by commas) and **Link id**.
+
+The first read after the installation is silent: the links already there are
+not announced. At most ten events are fired per read; the rest is counted as
+seen.
+
+## Scene actions
+
+- **Save a link in Linkwarden**: **Link** (required), and optionally **Name**
+  (empty: Linkwarden uses the title of the page), **Collection** (the name of
+  an existing collection, upper or lower case alike, `Parent/Child` for a
+  sub-collection; empty: Unorganized) and **Tags** (separated by commas;
+  missing tags are created). An unknown collection is an error: the
+  integration never creates one. Returns **Link id**, **Name**, **Collection**
+  and **Already saved** (true when Linkwarden refuses duplicates, a setting of
+  its preferences, and the link is there already).
+- **Read the latest Linkwarden links**: **Collection** (optional, as above)
+  and **Number of links** (1, 3, 5 or 10). Returns **Number of links read**,
+  **Links, one per line** (`name — address`), **Name of the newest link** and
+  **Address of the newest link**.
+
+## Scene examples
+
+- **Recipes on your phone**: trigger **New link**, collection **Recipes** →
+  send a message "New recipe: {{triggerEvent.data.name}}
+  {{triggerEvent.data.url}}".
+- **Sunday reading**: every Sunday at 10:00 → **Read the latest Linkwarden
+  links**, collection `Reading`, 5 links → send a message with the output
+  **Links, one per line**.
+- **Save the camera clip**: when another integration gives a clip address →
+  **Save a link in Linkwarden** with that address, collection `Cameras`, tag
+  `doorbell`.
+- **Reading pile**: every evening → continue only if the feature **Links** of
+  the `Reading` collection is above 30 → send a message "Your reading pile has
+  more than 30 links".
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+- **"Linkwarden refused the access token"**: the token was revoked, has
+  expired or was mistyped. Create a new one in Linkwarden → Settings → Access
+  Tokens.
+- **"Linkwarden does not answer"**: check the address and the port from the
+  Gladys machine. The container uses a bridge network: `localhost` is the
+  container itself, enter the IP address of the server instead.
+- **"This address does not answer like Linkwarden 2.10 or later"**: a proxy
+  login page answers instead of Linkwarden, or Linkwarden is too old. Enter
+  the address of Linkwarden itself, or update it.
+- **"No collection … in Linkwarden"**: the collection of the scene action must
+  exist. Create it in Linkwarden first.
+- A collection is missing from the trigger filter or the widget settings: add
+  its device in the **Discovery** tab first.
+- To see more in the logs of the integration, set `LOG_LEVEL=debug`.
+
+## Limits
+
+- One Linkwarden user: the owner of the token.
+- The trigger fires at the next read (30 minutes by default), not instantly:
+  Linkwarden pushes nothing.
+- **Links added today** and the trigger read up to 500 links per read: past
+  that, the count of the day stops at 500 and the oldest are not announced.
+- Discovery offers the first 100 collections.
+- The integration never deletes, moves nor archives anything in Linkwarden.
+- Not affiliated with the Linkwarden project.

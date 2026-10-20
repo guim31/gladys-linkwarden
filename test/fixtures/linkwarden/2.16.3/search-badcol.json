@@ -1,0 +1,11 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "links": [],
+      "nextCursor": null
+    },
+    "success": true,
+    "message": "Success"
+  }
+}

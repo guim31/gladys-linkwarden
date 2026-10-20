@@ -1,67 +1,146 @@
-# Template de démonstration
+# Linkwarden
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+Reliez Gladys à [Linkwarden](https://linkwarden.app), l'application
+auto-hébergée pour collecter, ranger et conserver des liens : suivez vos
+compteurs, réagissez quand un lien est enregistré dans une collection,
+enregistrez des liens depuis vos scènes ou le tableau de bord, et lisez les
+plus récents dans un message. Tout reste sur votre réseau local : Gladys parle
+directement à votre serveur Linkwarden.
 
-## Ce que vous obtenez
+Testée sur un vrai serveur Linkwarden 2.16.3 (l'image Docker officielle). Vos
+retours sont les bienvenus sur le forum de Gladys.
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+## Prérequis
+
+- Gladys Assistant 5.2 ou plus.
+- Linkwarden 2.10 ou plus, joignable depuis la machine de Gladys, sur le port
+  3000 par défaut, ou derrière un reverse proxy.
+- Un jeton d'accès : dans Linkwarden, ouvrez **Paramètres → Jetons d'accès** et
+  créez-en un. Choisissez l'expiration **Jamais**, ou notez la date pour le
+  renouveler. L'intégration voit les liens de l'utilisateur à qui appartient
+  le jeton, collections partagées comprises.
 
 ## Configuration
 
 1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température. L'**intervalle de rafraîchissement** règle la fréquence
-   de lecture de la station météo et de la puissance de la prise : toutes
-   les 5 minutes par défaut, toutes les minutes au plus.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+2. Dans **Adresse de Linkwarden**, saisissez l'adresse IP du serveur, par
+   exemple `192.168.1.50` : l'intégration utilise alors le port 3000. Ajoutez
+   un port si le vôtre est différent (`192.168.1.50:3100`). Derrière un reverse
+   proxy, saisissez l'adresse complète (`https://liens.example.org`).
+3. Collez le **Jeton d'accès**.
+4. **Lire Linkwarden toutes les** : 5, 15, 30 (par défaut) ou 60 minutes. Les
+   nouveaux liens sont annoncés à la lecture suivante ; les liens enregistrés
+   depuis Gladys mettent les compteurs à jour aussitôt.
+5. **Langue des noms et messages** fixe le nom des fonctionnalités (figé à
+   l'ajout d'un appareil) et les textes de l'intégration. Français par défaut.
+6. Enregistrez, puis utilisez **Tester la connexion** : elle affiche
+   l'utilisateur Linkwarden et le nombre de liens et de collections.
+7. Dans l'onglet **Découverte**, ajoutez l'appareil **Linkwarden**, et les
+   collections que vous voulez suivre.
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+## Appareils
 
-## Actions
+**Linkwarden** (un appareil pour l'utilisateur du jeton) :
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+| Fonctionnalité            | Valeur                                                    |
+| ------------------------- | --------------------------------------------------------- |
+| Liens                     | nombre de liens, toutes collections confondues            |
+| Liens ajoutés aujourd'hui | liens enregistrés depuis minuit (retombe à 0 juste après) |
+| Collections               | nombre de collections, sous-collections comprises         |
+| Dernier lien              | nom du lien le plus récent (son domaine s'il n'en a pas)  |
 
-## Scènes
+**Un appareil par collection** (nommé comme la collection, `Parent / Enfant`
+pour une sous-collection), avec une fonctionnalité, **Liens** : le nombre de
+liens rangés directement dans la collection. N'ajoutez que celles qui vous
+intéressent.
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
+Les compteurs gardent leur historique : un graphique montre comment une
+collection grandit.
 
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+## Widget du tableau de bord
 
-## Tableau de bord
+**Linkwarden** : trois tuiles (liens, aujourd'hui, collections), les six liens
+les plus récents et un bouton **Enregistrer un lien**. Dans les réglages du
+widget, **Collection** choisit un appareil collection : le widget affiche alors
+son nombre de liens et ses liens les plus récents, et enregistre dedans.
+Touchez un lien pour lire sa description et l'ouvrir (liens https seulement ;
+**Ouvrir dans Linkwarden** apparaît quand Linkwarden est joint en https).
+**Enregistrer un lien** ouvre un formulaire : saisissez un lien (`https://…` ou
+`www.…`) et l'intégration l'enregistre.
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+## Déclencheurs de scène
+
+**Nouveau lien** : un lien est enregistré dans Linkwarden, depuis l'application
+web, l'extension du navigateur, l'application mobile ou un flux RSS. Le filtre
+**Collection** ne garde que les liens d'une collection (choisissez un appareil
+collection ; vide : toutes). Les imports et les liens enregistrés par cette
+intégration ne sont pas annoncés.
+
+Variables : **Nom**, **Lien**, **Description**, **Collection** (son nom),
+**Étiquettes** (séparées par des virgules) et **Identifiant du lien**.
+
+La première lecture après l'installation est silencieuse : les liens déjà
+présents ne sont pas annoncés. Dix événements au plus partent par lecture ; le
+reste est compté comme vu.
+
+## Actions de scène
+
+- **Enregistrer un lien dans Linkwarden** : **Lien** (obligatoire), et en
+  option **Nom** (vide : Linkwarden prend le titre de la page), **Collection**
+  (le nom d'une collection existante, majuscules ou minuscules indifférentes,
+  `Parent/Enfant` pour une sous-collection ; vide : Unorganized) et
+  **Étiquettes** (séparées par des virgules ; les étiquettes absentes sont
+  créées). Une collection inconnue est une erreur : l'intégration n'en crée
+  jamais. Renvoie **Identifiant du lien**, **Nom**, **Collection** et **Déjà
+  enregistré** (vrai quand Linkwarden refuse les doublons, un réglage de ses
+  préférences, et que le lien y est déjà).
+- **Lire les derniers liens Linkwarden** : **Collection** (facultative, comme
+  ci-dessus) et **Nombre de liens** (1, 3, 5 ou 10). Renvoie **Nombre de liens
+  lus**, **Liens, un par ligne** (`nom — adresse`), **Nom du lien le plus
+  récent** et **Adresse du lien le plus récent**.
+
+## Exemples de scènes
+
+- **Recettes sur le téléphone** : déclencheur **Nouveau lien**, collection
+  **Recettes** → envoyer un message « Nouvelle recette :
+  {{triggerEvent.data.name}} {{triggerEvent.data.url}} ».
+- **Lecture du dimanche** : chaque dimanche à 10 h → **Lire les derniers liens
+  Linkwarden**, collection `À lire`, 5 liens → envoyer un message avec la
+  sortie **Liens, un par ligne**.
+- **Garder le clip de la caméra** : quand une autre intégration fournit
+  l'adresse d'un clip → **Enregistrer un lien dans Linkwarden** avec cette
+  adresse, collection `Caméras`, étiquette `sonnette`.
+- **Pile de lecture** : chaque soir → continuer seulement si la fonctionnalité
+  **Liens** de la collection `À lire` dépasse 30 → envoyer un message « Votre
+  pile de lecture dépasse 30 liens ».
 
 ## Dépannage
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+- **« Linkwarden a refusé le jeton d'accès »** : le jeton a été révoqué, a
+  expiré ou est mal recopié. Créez-en un nouveau dans Linkwarden → Paramètres →
+  Jetons d'accès.
+- **« Linkwarden ne répond pas »** : vérifiez l'adresse et le port depuis la
+  machine de Gladys. Le conteneur est sur un réseau en pont : `localhost`
+  désigne le conteneur lui-même, saisissez plutôt l'adresse IP du serveur.
+- **« Cette adresse ne répond pas comme Linkwarden 2.10 ou plus »** : une page
+  de connexion d'un proxy répond à la place de Linkwarden, ou Linkwarden est
+  trop ancien. Saisissez l'adresse de Linkwarden lui-même, ou mettez-le à jour.
+- **« Aucune collection … dans Linkwarden »** : la collection de l'action de
+  scène doit exister. Créez-la d'abord dans Linkwarden.
+- Une collection manque dans le filtre du déclencheur ou les réglages du
+  widget : ajoutez d'abord son appareil dans l'onglet **Découverte**.
+- Pour voir plus de détails dans les journaux de l'intégration, réglez
+  `LOG_LEVEL=debug`.
+
+## Limites
+
+- Un seul utilisateur Linkwarden : le propriétaire du jeton.
+- Le déclencheur part à la lecture suivante (30 minutes par défaut), pas
+  instantanément : Linkwarden ne pousse rien.
+- **Liens ajoutés aujourd'hui** et le déclencheur lisent jusqu'à 500 liens par
+  lecture : au-delà, le compte du jour s'arrête à 500 et les plus anciens ne
+  sont pas annoncés.
+- La découverte propose les 100 premières collections.
+- L'intégration ne supprime, ne déplace et n'archive jamais rien dans
+  Linkwarden.
+- Sans lien avec le projet Linkwarden.

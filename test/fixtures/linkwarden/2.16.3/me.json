@@ -1,0 +1,79 @@
+{
+  "status": 200,
+  "body": {
+    "response": {
+      "id": 1,
+      "uuid": "00000000-1111-4222-8333-444444444444",
+      "name": "Alice Test",
+      "username": "alice",
+      "email": null,
+      "emailVerified": null,
+      "unverifiedNewEmail": null,
+      "image": null,
+      "locale": "en",
+      "parentSubscriptionId": null,
+      "collectionOrder": [],
+      "linksRouteTo": "ORIGINAL",
+      "aiTaggingMethod": "DISABLED",
+      "aiPredefinedTags": [],
+      "aiTagExistingLinks": false,
+      "theme": "dark",
+      "dismissedAnnouncementId": null,
+      "readableFontFamily": "sans-serif",
+      "readableFontSize": "20px",
+      "readableLineHeight": "1.8",
+      "readableLineWidth": "normal",
+      "preventDuplicateLinks": false,
+      "archiveAsScreenshot": true,
+      "archiveAsMonolith": true,
+      "archiveAsPDF": true,
+      "archiveAsReadable": true,
+      "archiveAsWaybackMachine": false,
+      "isPrivate": false,
+      "referredBy": null,
+      "lastPickedAt": null,
+      "acceptPromotionalEmails": false,
+      "trialEndEmailSent": false,
+      "createdAt": "2026-10-20T12:49:08.539Z",
+      "updatedAt": "2026-10-20T12:49:08.539Z",
+      "dashboardSections": [
+        {
+          "id": 1,
+          "userId": 1,
+          "collectionId": null,
+          "type": "STATS",
+          "order": 0,
+          "createdAt": "2026-10-20T12:49:08.539Z",
+          "updatedAt": "2026-10-20T12:49:08.539Z"
+        },
+        {
+          "id": 2,
+          "userId": 1,
+          "collectionId": null,
+          "type": "RECENT_LINKS",
+          "order": 1,
+          "createdAt": "2026-10-20T12:49:08.539Z",
+          "updatedAt": "2026-10-20T12:49:08.539Z"
+        },
+        {
+          "id": 3,
+          "userId": 1,
+          "collectionId": null,
+          "type": "PINNED_LINKS",
+          "order": 2,
+          "createdAt": "2026-10-20T12:49:08.539Z",
+          "updatedAt": "2026-10-20T12:49:08.539Z"
+        }
+      ],
+      "subscription": {
+        "active": false,
+        "quantity": 0
+      },
+      "parentSubscription": {
+        "user": {}
+      },
+      "hasPassword": true,
+      "hasOAuthAccount": false
+    }
+  }
+}

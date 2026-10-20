@@ -1,177 +1,606 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Linkwarden",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Your Linkwarden links in Gladys: counters, new links, links saved and read from scenes.",
+    "fr": "Vos liens Linkwarden dans Gladys : compteurs, nouveaux liens, liens enregistrés et lus par scène.",
+    "de": "Deine Linkwarden-Links in Gladys: Zähler, neue Links, Links aus Szenen speichern und lesen.",
+    "es": "Sus enlaces Linkwarden en Gladys: contadores, nuevos enlaces, enlaces guardados y leídos por escena."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
-  "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "docker_image": "ghcr.io/guim31/gladys-linkwarden:1.0.0",
+  "gladys_version": ">=5.2.0",
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-linkwarden/main/cover.png",
+  "categories": ["services"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Connect Linkwarden",
+        "fr": "Connecter Linkwarden",
+        "de": "Linkwarden verbinden",
+        "es": "Conectar Linkwarden"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Enter the address of your Linkwarden server (port 3000 by default) and an access token: in Linkwarden, open Settings → Access Tokens and create one. The integration reads your counters and newest links, and saves the links your scenes send it.",
+        "fr": "Saisissez l'adresse de votre serveur Linkwarden (port 3000 par défaut) et un jeton d'accès : dans Linkwarden, ouvrez Paramètres → Jetons d'accès et créez-en un. L'intégration lit vos compteurs et vos derniers liens, et enregistre les liens que vos scènes lui envoient.",
+        "de": "Gib die Adresse deines Linkwarden-Servers (standardmäßig Port 3000) und ein Zugangstoken ein: Öffne in Linkwarden Einstellungen → Zugangstokens und erstelle eines. Die Integration liest deine Zähler und neuesten Links und speichert die Links, die deine Szenen ihr schicken.",
+        "es": "Introduzca la dirección de su servidor Linkwarden (puerto 3000 por defecto) y un token de acceso: en Linkwarden, abra Ajustes → Tokens de acceso y cree uno. La integración lee sus contadores y sus últimos enlaces, y guarda los enlaces que le envían sus escenas."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://docs.linkwarden.app/",
+          "label": {
+            "en": "Linkwarden documentation",
+            "fr": "Documentation de Linkwarden",
+            "de": "Linkwarden-Dokumentation",
+            "es": "Documentación de Linkwarden"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "Linkwarden address",
+        "fr": "Adresse de Linkwarden",
+        "de": "Linkwarden-Adresse",
+        "es": "Dirección de Linkwarden"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
+      "placeholder": {
+        "en": "e.g. 192.168.1.50:3000",
+        "fr": "ex. 192.168.1.50:3000",
+        "de": "z. B. 192.168.1.50:3000",
+        "es": "p. ej. 192.168.1.50:3000"
+      },
       "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "default": ""
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "access_token",
+      "type": "secret",
+      "label": {
+        "en": "Access token",
+        "fr": "Jeton d'accès",
+        "de": "Zugangstoken",
+        "es": "Token de acceso"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "description": {
+        "en": "Linkwarden → Settings → Access Tokens → New token (expiry: never, or renew it in time).",
+        "fr": "Linkwarden → Paramètres → Jetons d'accès → Nouveau jeton (expiration : jamais, ou pensez à le renouveler).",
+        "de": "Linkwarden → Einstellungen → Zugangstokens → Neues Token (Ablauf: nie, oder erneuere es rechtzeitig).",
+        "es": "Linkwarden → Ajustes → Tokens de acceso → Nuevo token (caducidad: nunca, o renuévelo a tiempo)."
+      },
+      "required": true
     },
     {
-      "key": "unit",
+      "key": "refresh_minutes",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "label": {
+        "en": "Read Linkwarden every",
+        "fr": "Lire Linkwarden toutes les",
+        "de": "Linkwarden lesen alle",
+        "es": "Leer Linkwarden cada"
+      },
+      "description": {
+        "en": "New links are announced at the next read. Links saved from Gladys update the counters at once.",
+        "fr": "Les nouveaux liens sont annoncés à la lecture suivante. Les liens enregistrés depuis Gladys mettent les compteurs à jour aussitôt.",
+        "de": "Neue Links werden beim nächsten Lesen gemeldet. Aus Gladys gespeicherte Links aktualisieren die Zähler sofort.",
+        "es": "Los nuevos enlaces se anuncian en la siguiente lectura. Los enlaces guardados desde Gladys actualizan los contadores al instante."
+      },
       "required": false,
-      "default": "celsius",
+      "default": "30",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "5",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        },
+        {
+          "value": "15",
+          "label": {
+            "en": "15 minutes",
+            "fr": "15 minutes",
+            "de": "15 Minuten",
+            "es": "15 minutos"
+          }
+        },
+        {
+          "value": "30",
+          "label": {
+            "en": "30 minutes",
+            "fr": "30 minutes",
+            "de": "30 Minuten",
+            "es": "30 minutos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "60 minutes",
+            "fr": "60 minutes",
+            "de": "60 Minuten",
+            "es": "60 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of names and messages",
+        "fr": "Langue des noms et messages",
+        "de": "Sprache der Namen und Meldungen",
+        "es": "Idioma de nombres y mensajes"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Feature names are set when a device is added to Gladys.",
+        "fr": "Les noms des fonctionnalités sont fixés à l'ajout d'un appareil dans Gladys.",
+        "de": "Die Namen der Funktionen werden beim Hinzufügen eines Geräts zu Gladys festgelegt.",
+        "es": "Los nombres de las funciones se fijan al añadir un dispositivo a Gladys."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "link_added",
+      "label": {
+        "en": "New link",
+        "fr": "Nouveau lien",
+        "de": "Neuer Link",
+        "es": "Nuevo enlace"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A link is saved in Linkwarden (imports and the links saved by this integration excepted).",
+        "fr": "Un lien est enregistré dans Linkwarden (hors imports et liens enregistrés par cette intégration).",
+        "de": "Ein Link wird in Linkwarden gespeichert (außer Importen und Links dieser Integration).",
+        "es": "Se guarda un enlace en Linkwarden (salvo importaciones y enlaces guardados por esta integración)."
       },
       "fields": [
         {
-          "key": "device",
+          "key": "collection",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "required": false,
+          "label": {
+            "en": "Collection (empty: all)",
+            "fr": "Collection (vide : toutes)",
+            "de": "Sammlung (leer: alle)",
+            "es": "Colección (vacío: todas)"
+          },
+          "description": {
+            "en": "A collection added as a device in Gladys.",
+            "fr": "Une collection ajoutée comme appareil dans Gladys.",
+            "de": "Eine als Gerät zu Gladys hinzugefügte Sammlung.",
+            "es": "Una colección añadida como dispositivo en Gladys."
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Link",
+            "fr": "Lien",
+            "de": "Link",
+            "es": "Enlace"
+          }
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "label": {
+            "en": "Description",
+            "fr": "Description",
+            "de": "Beschreibung",
+            "es": "Descripción"
+          }
+        },
+        {
+          "key": "collection_name",
+          "type": "string",
+          "label": {
+            "en": "Collection",
+            "fr": "Collection",
+            "de": "Sammlung",
+            "es": "Colección"
+          }
+        },
+        {
+          "key": "tags",
+          "type": "string",
+          "label": {
+            "en": "Tags",
+            "fr": "Étiquettes",
+            "de": "Tags",
+            "es": "Etiquetas"
+          }
+        },
+        {
+          "key": "link_id",
+          "type": "number",
+          "label": {
+            "en": "Link id",
+            "fr": "Identifiant du lien",
+            "de": "Link-ID",
+            "es": "Id. del enlace"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "add_link",
+      "label": {
+        "en": "Save a link in Linkwarden",
+        "fr": "Enregistrer un lien dans Linkwarden",
+        "de": "Link in Linkwarden speichern",
+        "es": "Guardar un enlace en Linkwarden"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Saves a web address, in a collection and with tags if you want.",
+        "fr": "Enregistre une adresse web, dans une collection et avec des étiquettes si vous le souhaitez.",
+        "de": "Speichert eine Webadresse, auf Wunsch in einer Sammlung und mit Tags.",
+        "es": "Guarda una dirección web, en una colección y con etiquetas si lo desea."
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "key": "url",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Link",
+            "fr": "Lien",
+            "de": "Link",
+            "es": "Enlace"
+          },
+          "placeholder": {
+            "en": "https://…",
+            "fr": "https://…",
+            "de": "https://…",
+            "es": "https://…"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Name (optional)",
+            "fr": "Nom (facultatif)",
+            "de": "Name (optional)",
+            "es": "Nombre (opcional)"
+          },
+          "description": {
+            "en": "Empty: the title of the page.",
+            "fr": "Vide : le titre de la page.",
+            "de": "Leer: der Titel der Seite.",
+            "es": "Vacío: el título de la página."
+          }
+        },
+        {
+          "key": "collection",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Collection (optional)",
+            "fr": "Collection (facultatif)",
+            "de": "Sammlung (optional)",
+            "es": "Colección (opcional)"
+          },
+          "description": {
+            "en": "Name of an existing collection, e.g. Recipes (Parent/Child for a sub-collection). Empty: Unorganized.",
+            "fr": "Nom d'une collection existante, ex. Recettes (Parent/Enfant pour une sous-collection). Vide : Unorganized.",
+            "de": "Name einer vorhandenen Sammlung, z. B. Rezepte (Eltern/Kind für eine Untersammlung). Leer: Unorganized.",
+            "es": "Nombre de una colección existente, p. ej. Recetas (Padre/Hijo para una subcolección). Vacío: Unorganized."
+          }
+        },
+        {
+          "key": "tags",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Tags (optional)",
+            "fr": "Étiquettes (facultatif)",
+            "de": "Tags (optional)",
+            "es": "Etiquetas (opcional)"
+          },
+          "placeholder": {
+            "en": "e.g. dinner, italian",
+            "fr": "ex. dîner, italien",
+            "de": "z. B. Abendessen, italienisch",
+            "es": "p. ej. cena, italiana"
+          },
+          "description": {
+            "en": "Separated by commas; missing tags are created.",
+            "fr": "Séparées par des virgules ; les étiquettes absentes sont créées.",
+            "de": "Durch Kommas getrennt; fehlende Tags werden angelegt.",
+            "es": "Separadas por comas; las etiquetas que faltan se crean."
+          }
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
+          "key": "link_id",
+          "type": "number",
+          "label": {
+            "en": "Link id",
+            "fr": "Identifiant du lien",
+            "de": "Link-ID",
+            "es": "Id. del enlace"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "collection",
+          "type": "string",
+          "label": {
+            "en": "Collection",
+            "fr": "Collection",
+            "de": "Sammlung",
+            "es": "Colección"
+          }
+        },
+        {
+          "key": "already_saved",
           "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "label": {
+            "en": "Already saved",
+            "fr": "Déjà enregistré",
+            "de": "Schon gespeichert",
+            "es": "Ya guardado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "read_latest",
+      "label": {
+        "en": "Read the latest Linkwarden links",
+        "fr": "Lire les derniers liens Linkwarden",
+        "de": "Neueste Linkwarden-Links lesen",
+        "es": "Leer los últimos enlaces de Linkwarden"
+      },
+      "description": {
+        "en": "Reads the newest links, of every collection or of one, to send them in a message.",
+        "fr": "Lit les liens les plus récents, de toutes les collections ou d'une seule, pour les envoyer dans un message.",
+        "de": "Liest die neuesten Links, aller Sammlungen oder einer, um sie in einer Nachricht zu senden.",
+        "es": "Lee los enlaces más recientes, de todas las colecciones o de una, para enviarlos en un mensaje."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "collection",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Collection (empty: all)",
+            "fr": "Collection (vide : toutes)",
+            "de": "Sammlung (leer: alle)",
+            "es": "Colección (vacío: todas)"
+          },
+          "description": {
+            "en": "Name of an existing Linkwarden collection, e.g. Recipes; Parent/Child for a sub-collection.",
+            "fr": "Nom d'une collection Linkwarden existante, ex. Recettes ; Parent/Enfant pour une sous-collection.",
+            "de": "Name einer vorhandenen Linkwarden-Sammlung, z. B. Rezepte; Eltern/Kind für eine Untersammlung.",
+            "es": "Nombre de una colección de Linkwarden existente, p. ej. Recetas; Padre/Hijo para una subcolección."
+          }
+        },
+        {
+          "key": "count",
+          "type": "select",
+          "required": false,
+          "default": "5",
+          "label": {
+            "en": "Number of links",
+            "fr": "Nombre de liens",
+            "de": "Anzahl der Links",
+            "es": "Número de enlaces"
+          },
+          "options": [
+            {
+              "value": "1",
+              "label": {
+                "en": "1",
+                "fr": "1",
+                "de": "1",
+                "es": "1"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "10",
+              "label": {
+                "en": "10",
+                "fr": "10",
+                "de": "10",
+                "es": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "Number of links read",
+            "fr": "Nombre de liens lus",
+            "de": "Anzahl gelesener Links",
+            "es": "Número de enlaces leídos"
+          }
+        },
+        {
+          "key": "links",
+          "type": "string",
+          "label": {
+            "en": "Links, one per line",
+            "fr": "Liens, un par ligne",
+            "de": "Links, einer pro Zeile",
+            "es": "Enlaces, uno por línea"
+          }
+        },
+        {
+          "key": "latest_name",
+          "type": "string",
+          "label": {
+            "en": "Name of the newest link",
+            "fr": "Nom du lien le plus récent",
+            "de": "Name des neuesten Links",
+            "es": "Nombre del enlace más reciente"
+          }
+        },
+        {
+          "key": "latest_url",
+          "type": "string",
+          "label": {
+            "en": "Address of the newest link",
+            "fr": "Adresse du lien le plus récent",
+            "de": "Adresse des neuesten Links",
+            "es": "Dirección del enlace más reciente"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "links",
+      "label": {
+        "en": "Linkwarden",
+        "fr": "Linkwarden",
+        "de": "Linkwarden",
+        "es": "Linkwarden"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Counters, the newest links and a button to save a link.",
+        "fr": "Compteurs, derniers liens et un bouton pour enregistrer un lien.",
+        "de": "Zähler, neueste Links und eine Taste, um einen Link zu speichern.",
+        "es": "Contadores, últimos enlaces y un botón para guardar un enlace."
+      },
+      "icon": "link",
+      "action_timeout_seconds": 30,
+      "settings": [
+        {
+          "key": "collection",
+          "type": "select",
+          "source": "devices",
+          "required": false,
+          "label": {
+            "en": "Collection (empty: all)",
+            "fr": "Collection (vide : toutes)",
+            "de": "Sammlung (leer: alle)",
+            "es": "Colección (vacío: todas)"
+          },
+          "description": {
+            "en": "Pick a collection added as a device to list and save there.",
+            "fr": "Choisissez une collection ajoutée comme appareil pour y lister et enregistrer.",
+            "de": "Wähle eine als Gerät hinzugefügte Sammlung, um dort aufzulisten und zu speichern.",
+            "es": "Elija una colección añadida como dispositivo para listar y guardar en ella."
+          }
+        }
+      ]
     }
   ]
 }

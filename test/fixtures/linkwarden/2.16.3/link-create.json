@@ -1,0 +1,75 @@
+{
+  "status": 200,
+  "body": {
+    "response": {
+      "id": 1,
+      "name": "Pasta carbonara",
+      "type": "url",
+      "description": "",
+      "createdById": 1,
+      "collectionId": 1,
+      "icon": null,
+      "iconWeight": null,
+      "color": null,
+      "url": "http://192.0.2.10/pasta",
+      "textContent": null,
+      "preview": "unavailable",
+      "image": "unavailable",
+      "pdf": "unavailable",
+      "readable": "unavailable",
+      "monolith": "unavailable",
+      "clientSide": false,
+      "aiTagged": false,
+      "metaDescription": null,
+      "indexVersion": null,
+      "lastPreserved": "2026-10-20T12:49:15.959Z",
+      "importDate": null,
+      "createdAt": "2026-10-20T12:49:15.960Z",
+      "updatedAt": "2026-10-20T12:49:15.960Z",
+      "tags": [
+        {
+          "id": 1,
+          "name": "dinner",
+          "ownerId": 1,
+          "archiveAsScreenshot": null,
+          "archiveAsMonolith": null,
+          "archiveAsPDF": null,
+          "archiveAsReadable": null,
+          "archiveAsWaybackMachine": null,
+          "aiTag": null,
+          "aiGenerated": false,
+          "createdAt": "2026-10-20T12:49:15.960Z",
+          "updatedAt": "2026-10-20T12:49:15.960Z"
+        },
+        {
+          "id": 2,
+          "name": "italian",
+          "ownerId": 1,
+          "archiveAsScreenshot": null,
+          "archiveAsMonolith": null,
+          "archiveAsPDF": null,
+          "archiveAsReadable": null,
+          "archiveAsWaybackMachine": null,
+          "aiTag": null,
+          "aiGenerated": false,
+          "createdAt": "2026-10-20T12:49:15.960Z",
+          "updatedAt": "2026-10-20T12:49:15.960Z"
+        }
+      ],
+      "collection": {
+        "id": 1,
+        "name": "Recipes",
+        "description": "Cooking",
+        "icon": null,
+        "iconWeight": null,
+        "color": "#0ea5e9",
+        "parentId": null,
+        "isPublic": false,
+        "ownerId": 1,
+        "createdById": 1,
+        "createdAt": "2026-10-20T12:49:15.890Z",
+        "updatedAt": "2026-10-20T12:49:15.890Z"
+      }
+    }
+  }
+}

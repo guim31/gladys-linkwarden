@@ -1,0 +1,6 @@
+{
+  "status": 400,
+  "body": {
+    "response": "Error: Invalid URL [url]"
+  }
+}
