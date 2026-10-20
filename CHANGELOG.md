@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-20
+
 ### Added
 
 - A Linkwarden device: links, links added today, collections, and the name of
@@ -22,4 +24,5 @@ the notes of the version's GitHub Release.
   latest Linkwarden links" (to send them in a message).
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-linkwarden/commits/main
+[Unreleased]: https://github.com/guim31/gladys-linkwarden/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-linkwarden/releases/tag/v1.0.0
