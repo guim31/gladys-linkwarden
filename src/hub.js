@@ -60,6 +60,8 @@ export const MAX_EVENTS_PER_READ = 10;
 // The links saved by the integration itself are never announced (a scene
 // bound to "New link" that saves one would loop).
 const MAX_OWN = 200;
+// Reads after which a link whose event Gladys keeps refusing is given up.
+export const MAX_TRIES = 3;
 
 /** An Error carrying a coded, multi-language message. */
 export class CommandError extends Error {
@@ -103,6 +105,8 @@ export class Hub {
     /** what the trigger already saw: { user, lastId } */
     this.seen = null;
     this.own = new Set();
+    /** link id -> reads at which Gladys refused its event */
+    this.retries = new Map();
     this.eventFailing = false;
     this.devicesFailing = false;
     this.publishFailing = false;
@@ -132,6 +136,11 @@ export class Hub {
       typeof saved.user === 'string' && Number.isInteger(saved.lastId) && saved.lastId >= 0
         ? { user: saved.user, lastId: saved.lastId }
         : null;
+    // The links saved from Gladys but not read back yet: never announced,
+    // even after a restart.
+    if (Array.isArray(saved.own)) {
+      this.own = new Set(saved.own.filter(Number.isInteger).slice(-MAX_OWN));
+    }
     this.#scheduleMidnight();
     await this.reconfigure(config);
   }
@@ -300,6 +309,9 @@ export class Hub {
     this.widgetLists.clear();
     this.#recover();
     await this.#update();
+    if (client !== this.client || this.stopped || !this.user) {
+      return; // the configuration changed meanwhile
+    }
     await this.#announce(links);
     await this.updateConnectionStatus();
   }
@@ -377,11 +389,20 @@ export class Hub {
           // and the next ones are fired again at the next read.
           const status = err?.status;
           const final = Number.isInteger(status) && status >= 400 && status < 500 && status !== 429;
-          if (!final) {
+          // A link Gladys refuses read after read is given up: it would
+          // hold back every later one.
+          const tries = (this.retries.get(link.id) ?? 0) + 1;
+          if (!final && tries < MAX_TRIES) {
+            this.retries.set(link.id, tries);
             lastId = link.id - 1;
             break;
           }
+          this.retries.delete(link.id);
+          if (!final) {
+            logger.warn(`Link ${link.id} not announced: Gladys refused it ${tries} times`);
+          }
         }
+        this.retries.delete(link.id);
       }
     }
     for (const id of this.own) {
@@ -389,7 +410,7 @@ export class Hub {
         this.own.delete(id);
       }
     }
-    const next = { user: uuid, lastId };
+    const next = { user: uuid, lastId, own: [...this.own] };
     if (JSON.stringify(next) !== JSON.stringify(this.seen)) {
       this.seen = next;
       await this.store.save(next);
@@ -584,9 +605,14 @@ export class Hub {
     }
     if (this.failure) {
       return (
-        { unauthorized: 'unauthorized', invalid: 'invalid_answer', not_found: 'invalid_answer' }[
-          this.failure
-        ] ?? 'unreachable'
+        {
+          unauthorized: 'unauthorized',
+          invalid: 'invalid_answer',
+          not_found: 'invalid_answer',
+          http: 'error',
+          rejected: 'error',
+          duplicate: 'error',
+        }[this.failure] ?? 'unreachable'
       );
     }
     return null;
@@ -594,9 +620,10 @@ export class Hub {
 
   statusMessage() {
     const key = this.statusKey();
-    if (!key) {
-      return null;
-    }
+    return key ? this.#statusOf(key) : null;
+  }
+
+  #statusOf(key) {
     return Object.fromEntries(
       Object.entries(STATUS_TEXT).map(([language, table]) => [language, table[key]]),
     );
@@ -636,6 +663,10 @@ export class Hub {
     const message = this.statusMessage();
     if (message) {
       return message;
+    }
+    if (!this.loaded || !this.user) {
+      // The configuration changed during the test: nothing read yet.
+      return this.#statusOf('unreachable');
     }
     return Object.fromEntries(
       Object.entries(TEST_TEXT).map(([language, render]) => [
@@ -735,6 +766,8 @@ export class Hub {
     if (this.own.size > MAX_OWN) {
       this.own.delete(this.own.values().next().value);
     }
+    // Kept on disk: a restart before the next read must not announce it.
+    this.store.save({ ...this.seen, own: [...this.own] }).catch(() => {});
   }
 
   #commandError(err, fallback) {

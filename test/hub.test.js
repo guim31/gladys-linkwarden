@@ -7,7 +7,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateWidgetContent } from '@gladysassistant/integration-sdk';
-import { startOfDay } from '../src/hub.js';
+import { MAX_TRIES, startOfDay } from '../src/hub.js';
 import { MemoryStore } from '../src/store.js';
 import { HOST, TOKEN, createLinkwarden, settle } from './helpers/fakeLinkwarden.js';
 import {
@@ -387,4 +387,49 @@ test('the language changes the names, not the devices', async (t) => {
     main.features.map((f) => f.name),
     ['Links', 'Heute hinzugefügte Links', 'Sammlungen', 'Neuester Link'],
   );
+});
+
+test('a link Gladys keeps refusing is given up, the next ones go through', async (t) => {
+  const world = await createWorld();
+  t.after(() => world.app.stop());
+  const publish = world.gladys.publishSceneEvent.bind(world.gladys);
+  world.gladys.publishSceneEvent = async (key, data) => {
+    if (data.name === 'Poison') {
+      throw Object.assign(new Error('Internal error'), { status: 500 });
+    }
+    return publish(key, data);
+  };
+  world.server.addLink({ name: 'Poison' });
+  world.server.addLink({ name: 'After' });
+  for (let i = 0; i < MAX_TRIES; i += 1) {
+    await world.hub.refresh();
+  }
+  assert.deepEqual(
+    events(world.fake).map((e) => e.data.name),
+    ['After'],
+  );
+});
+
+test('a link saved from Gladys is not announced after a restart either', async (t) => {
+  const store = new MemoryStore();
+  const server = createLinkwarden();
+  const first = await createWorld({ server, store });
+  first.hub.refresh = async () => {}; // stopped before the next read
+  await first.fake.sceneAction('add_link', { url: 'https://example.org/own' });
+  await first.app.stop();
+  assert.equal(store.data.lastId, 3, 'the saved link was not read back');
+  assert.deepEqual(store.data.own, [4]);
+  const second = await createWorld({ server, store });
+  t.after(() => second.app.stop());
+  assert.equal(events(second.fake).length, 0);
+});
+
+test('an error answer during a read is not called "does not answer"', async (t) => {
+  const world = await createWorld();
+  t.after(() => world.app.stop());
+  const fetch = world.server.fetch;
+  world.hub.client.fetch = async () => new Response('{"response":"boom"}', { status: 500 });
+  await world.hub.refresh();
+  assert.match(world.fake.connectionStatus.message.en, /answered with an error/);
+  world.hub.client.fetch = fetch;
 });

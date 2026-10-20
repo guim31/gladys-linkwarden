@@ -44,6 +44,7 @@ export const STATUS_TEXT = {
     unauthorized:
       'Linkwarden refused the access token: create a new one in Settings → Access Tokens.',
     unreachable: 'Linkwarden does not answer: check its address and that it is running.',
+    error: 'Linkwarden answered with an error: see the logs of the integration.',
     invalid_answer:
       'This address does not answer like Linkwarden 2.10 or later: check the address and the port.',
   },
@@ -55,6 +56,7 @@ export const STATUS_TEXT = {
     unauthorized:
       "Linkwarden a refusé le jeton d'accès : créez-en un nouveau dans Paramètres → Jetons d'accès.",
     unreachable: "Linkwarden ne répond pas : vérifiez son adresse et qu'il est démarré.",
+    error: "Linkwarden a répondu par une erreur : consultez les journaux de l'intégration.",
     invalid_answer:
       "Cette adresse ne répond pas comme Linkwarden 2.10 ou plus : vérifiez l'adresse et le port.",
   },
@@ -65,6 +67,7 @@ export const STATUS_TEXT = {
     unauthorized:
       'Linkwarden hat das Zugangstoken abgelehnt: Erstelle ein neues unter Einstellungen → Zugangstoken.',
     unreachable: 'Linkwarden antwortet nicht: Prüfe die Adresse und ob es läuft.',
+    error: 'Linkwarden hat mit einem Fehler geantwortet: Sieh dir die Logs der Integration an.',
     invalid_answer:
       'Diese Adresse antwortet nicht wie Linkwarden 2.10 oder neuer: Prüfe Adresse und Port.',
   },
@@ -76,6 +79,7 @@ export const STATUS_TEXT = {
     unauthorized:
       'Linkwarden rechazó el token de acceso: cree uno nuevo en Ajustes → Tokens de acceso.',
     unreachable: 'Linkwarden no responde: compruebe su dirección y que esté en marcha.',
+    error: 'Linkwarden respondió con un error: consulte los registros de la integración.',
     invalid_answer:
       'Esta dirección no responde como Linkwarden 2.10 o posterior: compruebe la dirección y el puerto.',
   },

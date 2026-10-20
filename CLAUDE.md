@@ -113,6 +113,13 @@ test/fixtures/linkwarden/2.16.3/  bodies recorded on a real Linkwarden 2.16.3
 - Linkwarden fetches the page title of a new link only when its address is not
   private (`isUrlSafeForServerSideFetch`); otherwise the link is named after
   its URL, and the integration shows the domain instead.
+- The trigger keeps the highest link id seen and the ids saved from Gladys
+  (`/data/linkwarden-state.json`); an event Gladys refuses (5xx, 429) is
+  retried at the next read, three reads at most, so one bad link never blocks
+  the others.
+- Tests on Node 22: the timer of `AbortSignal.timeout` does not hold the event
+  loop; a fake `fetch` that waits for the abort must hold it itself, or the
+  test is cancelled ("Promise resolution is still pending").
 - Testing with Docker: `ghcr.io/linkwarden/linkwarden` (port 3000,
   `DATABASE_URL` to PostgreSQL, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`) and
   `postgres:16-alpine`. The worker archives links when it has internet access;

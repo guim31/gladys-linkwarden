@@ -123,7 +123,7 @@ export async function buildContent(hub, { language = 'en', settings = {} } = {})
     ? [
         {
           type: 'value',
-          label: cut(collectionLabel(collection), 40),
+          label: cut(collectionLabel(collection), 24),
           value: collection.links,
           icon: 'folder',
         },

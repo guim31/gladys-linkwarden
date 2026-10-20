@@ -46,7 +46,7 @@ Docker-Image). Rückmeldungen sind im Gladys-Forum willkommen.
 | Funktion                 | Wert                                                       |
 | ------------------------ | ---------------------------------------------------------- |
 | Links                    | Anzahl der Links, in allen Sammlungen                      |
-| Heute hinzugefügte Links | seit Mitternacht gespeicherte Links (kurz danach wieder 0) |
+| Heute hinzugefügte Links | seit Mitternacht gespeicherte oder importierte Links       |
 | Sammlungen               | Anzahl der Sammlungen, Untersammlungen eingeschlossen      |
 | Neuester Link            | Name des neuesten Links (seine Domain, wenn er keinen hat) |
 

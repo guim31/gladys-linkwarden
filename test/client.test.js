@@ -132,7 +132,12 @@ test('errors by kind, with the reason Linkwarden gave', async () => {
     timeout: 20,
     fetch: (url, init) =>
       new Promise((resolve, reject) => {
-        init.signal.addEventListener('abort', () => reject(init.signal.reason));
+        // The timer of AbortSignal.timeout does not hold the event loop.
+        const hold = setTimeout(() => {}, 5_000);
+        init.signal.addEventListener('abort', () => {
+          clearTimeout(hold);
+          reject(init.signal.reason);
+        });
       }),
   });
   await rejects(slow.me(), 'timeout');

@@ -42,12 +42,12 @@ retours sont les bienvenus sur le forum de Gladys.
 
 **Linkwarden** (un appareil pour l'utilisateur du jeton) :
 
-| Fonctionnalité            | Valeur                                                    |
-| ------------------------- | --------------------------------------------------------- |
-| Liens                     | nombre de liens, toutes collections confondues            |
-| Liens ajoutés aujourd'hui | liens enregistrés depuis minuit (retombe à 0 juste après) |
-| Collections               | nombre de collections, sous-collections comprises         |
-| Dernier lien              | nom du lien le plus récent (son domaine s'il n'en a pas)  |
+| Fonctionnalité            | Valeur                                                   |
+| ------------------------- | -------------------------------------------------------- |
+| Liens                     | nombre de liens, toutes collections confondues           |
+| Liens ajoutés aujourd'hui | liens enregistrés ou importés depuis minuit              |
+| Collections               | nombre de collections, sous-collections comprises        |
+| Dernier lien              | nom du lien le plus récent (son domaine s'il n'en a pas) |
 
 **Un appareil par collection** (nommé comme la collection, `Parent / Enfant`
 pour une sous-collection), avec une fonctionnalité, **Liens** : le nombre de

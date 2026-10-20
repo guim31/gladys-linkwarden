@@ -44,7 +44,7 @@ Feedback welcome on the Gladys forum.
 | Feature           | Value                                                 |
 | ----------------- | ----------------------------------------------------- |
 | Links             | number of links, in every collection                  |
-| Links added today | links saved since midnight (0 again just after it)    |
+| Links added today | links saved or imported since midnight                |
 | Collections       | number of collections, sub-collections included       |
 | Latest link       | name of the newest link (its domain when it has none) |
 

@@ -41,12 +41,12 @@ comentarios son bienvenidos en el foro de Gladys.
 
 **Linkwarden** (un dispositivo para el usuario del token):
 
-| Función              | Valor                                                         |
-| -------------------- | ------------------------------------------------------------- |
-| Enlaces              | número de enlaces, en todas las colecciones                   |
-| Enlaces añadidos hoy | enlaces guardados desde medianoche (vuelve a 0 justo después) |
-| Colecciones          | número de colecciones, subcolecciones incluidas               |
-| Último enlace        | nombre del enlace más reciente (su dominio si no tiene)       |
+| Función              | Valor                                                   |
+| -------------------- | ------------------------------------------------------- |
+| Enlaces              | número de enlaces, en todas las colecciones             |
+| Enlaces añadidos hoy | enlaces guardados o importados desde medianoche         |
+| Colecciones          | número de colecciones, subcolecciones incluidas         |
+| Último enlace        | nombre del enlace más reciente (su dominio si no tiene) |
 
 **Un dispositivo por colección** (con el nombre de la colección,
 `Padre / Hijo` para una subcolección), con una función, **Enlaces**: el número
