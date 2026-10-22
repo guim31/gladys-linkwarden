@@ -1,6 +1,6 @@
 {
   "name": "gladys-linkwarden",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Linkwarden integration for Gladys Assistant: link counters, new links, and links saved or read from scenes.",
   "type": "module",
